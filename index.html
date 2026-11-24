@@ -19,7 +19,7 @@
   .tab[aria-selected="true"] { color:var(--fg); border-bottom-color:var(--accent); font-weight:600; }
   .panel[hidden] { display:none; }
   .scroll { overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:8px; }
-  table { border-collapse:collapse; width:100%; min-width:760px; }
+  table { border-collapse:collapse; width:100%; min-width:860px; }
   th, td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
   th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); background:var(--bg); position:sticky; top:0; }
   tr:last-child td { border-bottom:0; }
@@ -28,6 +28,7 @@
   tr.done td:not(.chk) { text-decoration:line-through; color:var(--muted); }
   .tag { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; border:1px solid var(--line); }
   .tag.Gate { color:#1a8f6b; } .tag.Bitget { color:#2b5fd9; } .tag.MEXC { color:#8a4fd1; }
+  #links td[rowspan] { border-right:1px solid var(--line); background:var(--card); }
   .unk { color:var(--warn); }
   .notes { margin-top:16px; color:var(--muted); font-size:13px; }
   .notes li { margin:3px 0; }
@@ -50,68 +51,466 @@
     <div class="bar"><span id="count"></span><button id="reset" type="button">Limpar marcações</button></div>
     <div class="scroll">
       <table>
-        <thead><tr><th>Liquidou</th><th>Data ex</th><th>Horário (Brasília)</th><th>Moeda</th><th>Corretora</th><th>Dividendo/ação</th><th>Situação</th></tr></thead>
+        <thead><tr><th>Liquidou</th><th>Data ex</th><th>Horário (Brasília)</th><th>Moeda</th><th>Corretora</th><th>Dividendo/ação</th><th>Rend. est.</th><th>Situação</th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
     </div>
     <ul class="notes">
-      <li>Bitget: horário inferido do padrão de anúncios anteriores (08:00 UTC+8 = 21:00 de Brasília do dia anterior).</li>
-      <li>Gate: o horário exato só aparece no texto de cada anúncio; marcado como "Não confirmado".</li>
-      <li>MEXC: nenhum evento encontrado para a janela (padrão da corretora: 22:00 de Brasília do dia anterior à data ex).</li>
-      <li>As marcações ficam salvas só neste navegador.</li>
+      <li>Bitget: horário inferido da regra da corretora (fechamento estendido da bolsa dos EUA no dia anterior à data ex, normalmente 20:00 de Nova York = 22:00 de Brasília em novembro; pode ser 17:00 = 19:00 de Brasília).</li>
+      <li>Gate: horários confirmados nos anúncios oficiais (liquidação às 08:00 UTC = 05:00 de Brasília na própria data ex; SKHYNIX às 00:00 UTC = 21:00 de Brasília do dia anterior).</li>
+      <li>MEXC: horários confirmados nos anúncios oficiais (liquidação às 22:00 de Brasília do dia anterior à data ex). Valores aproximados (≈). TER, HL, MCHP e TSCO liquidaram em 22/11, fora da janela.</li>
+      <li>Rend. est.: estimativa não anualizada dos anúncios da MEXC. Nas linhas da Gate e da Bitget é a mesma estimativa da MEXC para o mesmo ativo (referência). — = sem dado.</li>
+      <li>As linhas "Já liquidou" já vêm marcadas; as suas marcações ficam salvas só neste navegador. "Limpar marcações" volta ao padrão.</li>
     </ul>
   </section>
 
   <section class="panel" id="p2" hidden>
     <div class="scroll">
       <table>
-        <thead><tr><th>Moeda</th><th>Corretora</th><th>Anúncio / fonte</th></tr></thead>
+        <thead><tr><th>Moeda</th><th>Data ex</th><th>Corretora</th><th>Anúncio / fonte</th></tr></thead>
         <tbody id="links"></tbody>
       </table>
     </div>
     <ul class="notes">
-      <li>Gate: links diretos dos anúncios oficiais (seção Dividend Distribution).</li>
+      <li>Gate: links diretos dos anúncios oficiais.</li>
       <li>Bitget: não consegui o link direto dos anúncios de COST/VLO/VRT (21/11), JNJ e NEM (23/11). Procure pelos títulos indicados na seção de notícias da Bitget; o link abaixo explica as regras de liquidação.</li>
-      <li>MEXC: sem anúncio de liquidação para esta janela.</li>
+      <li>MEXC: links dos anúncios de dividendos publicados em 20/11. Listas oficiais: <a href="https://www.gate.com/announcements/dividenddistribution" target="_blank" rel="noopener">Gate</a> · <a href="https://www.mexc.com/pt-BR/announcements/trading-updates" target="_blank" rel="noopener">MEXC</a>.</li>
     </ul>
   </section>
 </div>
 
 <script>
 var ROWS = [
-  ["24/11/2026","23/11 às 21:00 (inferido)","COST (especial)","Bitget","US$ 30,00","Já liquidou"],
-  ["24/11/2026","Não confirmado","COST (especial)","Gate","US$ 30,00","Anúncio 102905 sem horário legível"],
-  ["24/11/2026","23/11 às 21:00 (inferido)","JNJ","Bitget","US$ 1,34","Já liquidou"],
-  ["24/11/2026","Não confirmado","JNJ","Gate","US$ 1,34","Anúncio 102905 sem horário legível"],
-  ["24/11/2026","23/11 às 21:00 (inferido)","VLO","Bitget","US$ 1,20","Já liquidou"],
-  ["24/11/2026","Não confirmado","VLO","Gate","US$ 1,20","Anúncio 102905 sem horário legível"],
-  ["24/11/2026","23/11 às 21:00 (inferido)","VRT","Bitget","US$ 0,10","Já liquidou"],
-  ["24/11/2026","Não confirmado","VRT","Gate","US$ 0,10","Anúncio 102905 sem horário legível"],
-  ["24/11/2026","Não confirmado","STRC","Gate","US$ 0,04","Dividendo diário"],
-  ["25/11/2026","24/11 às 21:00 (hoje à noite, inferido)","NEM","Bitget","US$ 0,26","Pendente"],
-  ["25/11/2026","Não confirmado","TMUS","Gate","US$ 1,17","Data ex inferida"],
-  ["25/11/2026","Não confirmado","STRC","Gate","US$ 0,06","Cobertura provável, não confirmada"],
-  ["22 a 27/11/2026","Não confirmado","NEE","Gate","Não obtido","Valor e data não obtidos"],
-  ["27/11/2026","Não confirmado","SKHYNIX","Gate","KRW 20.000","Data ex na KRX; liquidação provável em 26 ou 27/11"]
+[
+"24/11/2026",
+"23/11 às 22:00 (inferido)",
+"COST (especial)",
+"Bitget",
+"US$ 30,00",
+"≈ 2,82%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"23/11 às 22:00 (confirmado)",
+"COST (especial)",
+"MEXC",
+"≈ US$ 30,00",
+"≈ 2,82%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"24/11 às 05:00 (confirmado)",
+"COST (especial)",
+"Gate",
+"US$ 30,00",
+"≈ 2,82%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"23/11 às 22:00 (inferido)",
+"JNJ",
+"Bitget",
+"US$ 1,34",
+"≈ 0,49%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"23/11 às 22:00 (confirmado)",
+"JNJ",
+"MEXC",
+"≈ US$ 1,34",
+"≈ 0,49%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"24/11 às 05:00 (confirmado)",
+"JNJ",
+"Gate",
+"US$ 1,34",
+"≈ 0,49%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"23/11 às 22:00 (inferido)",
+"VLO",
+"Bitget",
+"US$ 1,20",
+"≈ 0,35%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"23/11 às 22:00 (confirmado)",
+"VLO",
+"MEXC",
+"≈ US$ 1,20",
+"≈ 0,35%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"24/11 às 05:00 (confirmado)",
+"VLO",
+"Gate",
+"US$ 1,20",
+"≈ 0,35%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"23/11 às 22:00 (inferido)",
+"VRT",
+"Bitget",
+"US$ 0,10",
+"≈ 0,05%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"23/11 às 22:00 (confirmado)",
+"VRT",
+"MEXC",
+"≈ US$ 0,10",
+"≈ 0,05%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"24/11 às 05:00 (confirmado)",
+"VRT",
+"Gate",
+"US$ 0,10",
+"≈ 0,05%",
+"Já liquidou"
+],
+[
+"24/11/2026",
+"24/11 às 05:00 (confirmado)",
+"STRC",
+"Gate",
+"US$ 0,04",
+"—",
+"Já liquidou"
+],
+[
+"25/11/2026",
+"24/11 às 22:00 (hoje à noite, inferido)",
+"NEM",
+"Bitget",
+"US$ 0,26",
+"≈ 0,25%",
+"Pendente"
+],
+[
+"25/11/2026",
+"24/11 às 22:00 (hoje à noite, confirmado)",
+"NEM",
+"MEXC",
+"≈ US$ 0,26",
+"≈ 0,25%",
+"Pendente"
+],
+[
+"25/11/2026",
+"24/11 às 22:00 (hoje à noite, confirmado)",
+"TMUS",
+"MEXC",
+"≈ US$ 1,17",
+"≈ 0,72%",
+"Pendente"
+],
+[
+"25/11/2026",
+"25/11 às 05:00 (confirmado)",
+"TMUS",
+"Gate",
+"US$ 1,17",
+"≈ 0,72%",
+"Pendente"
+],
+[
+"25/11/2026",
+"24/11 às 22:00 (hoje à noite, confirmado)",
+"SPGI",
+"MEXC",
+"≈ US$ 0,97",
+"≈ 0,22%",
+"Pendente"
+],
+[
+"25/11/2026",
+"25/11 às 05:00 (confirmado)",
+"STRC",
+"Gate",
+"US$ 0,06",
+"—",
+"Pendente"
+],
+[
+"27/11/2026",
+"27/11 às 05:00 (confirmado)",
+"NEE",
+"Gate",
+"US$ 0,6232",
+"≈ 0,74%",
+"Pendente"
+],
+[
+"27/11/2026",
+"26/11 às 22:00 (confirmado)",
+"NEE",
+"MEXC",
+"≈ US$ 0,6232",
+"≈ 0,74%",
+"Pendente"
+],
+[
+"27/11/2026",
+"26/11 às 21:00 (confirmado)",
+"SKHYNIX",
+"Gate",
+"US$ 14,87 (KRW 20.000)",
+"≈ 1,71%",
+"Pendente (inclui SKHYNIXG à vista)"
+],
+[
+"27/11/2026",
+"26/11 às 22:00 (confirmado)",
+"SKHYNIX",
+"MEXC",
+"≈ US$ 15,0113",
+"≈ 1,71%",
+"Pendente"
+],
+[
+"27/11/2026",
+"26/11 às 22:00 (confirmado)",
+"HYUNDAI",
+"MEXC",
+"≈ US$ 1,8764",
+"≈ 0,94%",
+"Pendente"
+],
+[
+"27/11/2026",
+"27/11 às 05:00 (confirmado)",
+"STRC",
+"Gate",
+"US$ 0,10",
+"—",
+"Pendente"
+]
 ];
 var LINKS = [
-  ["COST (especial)","Gate","Gate: STRC, COST, JNJ, VRT e VLO (20/11)","https://www.gate.com/announcements/article/102905"],
-  ["JNJ","Gate","Gate: STRC, COST, JNJ, VRT e VLO (20/11)","https://www.gate.com/announcements/article/102905"],
-  ["VLO","Gate","Gate: STRC, COST, JNJ, VRT e VLO (20/11)","https://www.gate.com/announcements/article/102905"],
-  ["VRT","Gate","Gate: STRC, COST, JNJ, VRT e VLO (20/11)","https://www.gate.com/announcements/article/102905"],
-  ["STRC","Gate","Gate: STRC e TMUS (20/11)","https://www.gate.com/announcements/article/102903"],
-  ["TMUS","Gate","Gate: STRC e TMUS (20/11)","https://www.gate.com/announcements/article/102903"],
-  ["NEE","Gate","Gate: STRC e NEE","https://www.gate.com/announcements/article/102921"],
-  ["SKHYNIX","Gate","Gate: SKHYNIX Dividend Settlement (24/11)","https://www.gate.com/announcements/article/102966"],
-  ["Todas (Gate)","Gate","Lista oficial: Dividend Distribution","https://www.gate.com/announcements/dividenddistribution"],
-  ["COST, VLO, VRT","Bitget","Anúncio \"COSTUSDT、VLOUSDT、VRTUSDT\" (21/11): link direto não encontrado. Regras de liquidação:","https://www.bitget.com/support/articles/12560603884677"],
-  ["JNJ","Bitget","Anúncio \"JNJUSDT\" (23/11): link direto não encontrado. Regras de liquidação:","https://www.bitget.com/support/articles/12560603884677"],
-  ["NEM","Bitget","Anúncio \"NEMUSDT\" (23/11): link direto não encontrado. Horário de liquidação (T-1):","https://www.bitget.com/support/articles/12560603884782"],
-  ["JNJ","Empresa","Comunicado da J&J: US$ 1,34, data ex 24/11, pagamento 08/12","https://finance.yahoo.com/markets/stocks/articles/johnson-johnson-announces-quarterly-dividend-102500083.html"],
-  ["STRC","Calendário","Calendário de dividendos da STRC","https://strcincome.com/dividend"],
-  ["COST, VLO, VRT, NEM, TMUS","Calendário","Calendário de dividendos (DividendScope)","https://dividendscope.com/tools/dividend-calendar"]
+[
+"COST (especial)",
+"24/11",
+[
+[
+"Gate",
+"Anúncio: STRC, COST, JNJ, VRT e VLO (20/11)",
+"https://www.gate.com/announcements/article/102905"
+],
+[
+"MEXC",
+"Anúncio: VRT, JNJ, COST e VLO (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-vrtusdt-jnjusdt-and-2-other-stock-futures-17827791539877"
+],
+[
+"Bitget",
+"Anúncio \"COSTUSDT、VLOUSDT、VRTUSDT\" (21/11) – link direto não encontrado; regras de liquidação",
+"https://www.bitget.com/support/articles/12560603884677"
+]
+]
+],
+[
+"JNJ",
+"24/11",
+[
+[
+"Gate",
+"Anúncio: STRC, COST, JNJ, VRT e VLO (20/11)",
+"https://www.gate.com/announcements/article/102905"
+],
+[
+"MEXC",
+"Anúncio: VRT, JNJ, COST e VLO (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-vrtusdt-jnjusdt-and-2-other-stock-futures-17827791539877"
+],
+[
+"Bitget",
+"Anúncio \"JNJUSDT\" (23/11) – link direto não encontrado; regras de liquidação",
+"https://www.bitget.com/support/articles/12560603884677"
+],
+[
+"Empresa",
+"Comunicado da J&J (US$ 1,34, pagamento em 08/12)",
+"https://finance.yahoo.com/markets/stocks/articles/johnson-johnson-announces-quarterly-dividend-102500083.html"
+]
+]
+],
+[
+"VLO",
+"24/11",
+[
+[
+"Gate",
+"Anúncio: STRC, COST, JNJ, VRT e VLO (20/11)",
+"https://www.gate.com/announcements/article/102905"
+],
+[
+"MEXC",
+"Anúncio: VRT, JNJ, COST e VLO (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-vrtusdt-jnjusdt-and-2-other-stock-futures-17827791539877"
+],
+[
+"Bitget",
+"Anúncio \"COSTUSDT、VLOUSDT、VRTUSDT\" (21/11) – link direto não encontrado; regras de liquidação",
+"https://www.bitget.com/support/articles/12560603884677"
+]
+]
+],
+[
+"VRT",
+"24/11",
+[
+[
+"Gate",
+"Anúncio: STRC, COST, JNJ, VRT e VLO (20/11)",
+"https://www.gate.com/announcements/article/102905"
+],
+[
+"MEXC",
+"Anúncio: VRT, JNJ, COST e VLO (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-vrtusdt-jnjusdt-and-2-other-stock-futures-17827791539877"
+],
+[
+"Bitget",
+"Anúncio \"COSTUSDT、VLOUSDT、VRTUSDT\" (21/11) – link direto não encontrado; regras de liquidação",
+"https://www.bitget.com/support/articles/12560603884677"
+]
+]
+],
+[
+"STRC",
+"24, 25 e 27/11",
+[
+[
+"Gate",
+"Anúncio de 24/11 (US$ 0,04): STRC, COST, JNJ, VRT e VLO",
+"https://www.gate.com/announcements/article/102905"
+],
+[
+"Gate",
+"Anúncio de 25/11 (US$ 0,06): STRC e TMUS",
+"https://www.gate.com/announcements/article/102903"
+],
+[
+"Gate",
+"Anúncio de 27/11 (US$ 0,10): STRC e NEE",
+"https://www.gate.com/announcements/article/102921"
+],
+[
+"Calendário",
+"Calendário de dividendos da STRC",
+"https://strcincome.com/dividend"
+]
+]
+],
+[
+"NEM",
+"25/11",
+[
+[
+"MEXC",
+"Anúncio: NEM, TMUS e SPGI (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-nem-tmus-and-spgi-stock-futures-17827791539874"
+],
+[
+"Bitget",
+"Anúncio \"NEMUSDT\" (23/11) – link direto não encontrado; horário de liquidação (T-1)",
+"https://www.bitget.com/support/articles/12560603884782"
+]
+]
+],
+[
+"TMUS",
+"25/11",
+[
+[
+"Gate",
+"Anúncio: STRC e TMUS (20/11)",
+"https://www.gate.com/announcements/article/102903"
+],
+[
+"MEXC",
+"Anúncio: NEM, TMUS e SPGI (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-nem-tmus-and-spgi-stock-futures-17827791539874"
+]
+]
+],
+[
+"SPGI",
+"25/11",
+[
+[
+"MEXC",
+"Anúncio: NEM, TMUS e SPGI (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-nem-tmus-and-spgi-stock-futures-17827791539874"
+]
+]
+],
+[
+"NEE",
+"27/11",
+[
+[
+"Gate",
+"Anúncio: STRC e NEE",
+"https://www.gate.com/announcements/article/102921"
+],
+[
+"MEXC",
+"Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"
+]
+]
+],
+[
+"SKHYNIX",
+"27/11",
+[
+[
+"Gate",
+"Anúncio: SKHYNIX Dividend Settlement (24/11)",
+"https://www.gate.com/announcements/article/102966"
+],
+[
+"MEXC",
+"Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"
+]
+]
+],
+[
+"HYUNDAI",
+"27/11",
+[
+[
+"MEXC",
+"Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)",
+"https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"
+]
+]
+]
 ];
-var KEY = "div-checks-v1";
+var KEY = "div-checks-v2";
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)||"{}"); } catch(e){ return {}; } }
 function save(s){ try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){} }
 var state = load();
@@ -119,13 +518,13 @@ function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").rep
 function render(){
   var tb = document.getElementById("rows"), html = "", n = 0;
   ROWS.forEach(function(r,i){
-    var done = !!state[i]; if (done) n++;
+    var done = (state[i] !== undefined) ? !!state[i] : (r[6] === "Já liquidou"); if (done) n++;
     html += '<tr class="'+(done?'done':'')+'"><td class="chk"><input type="checkbox" data-i="'+i+'" '+(done?'checked':'')+' aria-label="Marcar como liquidado"></td>'
       + '<td>'+esc(r[0])+'</td>'
       + '<td class="'+(r[1]==="Não confirmado"?'unk':'')+'">'+esc(r[1])+'</td>'
       + '<td><strong>'+esc(r[2])+'</strong></td>'
       + '<td><span class="tag '+r[3]+'">'+r[3]+'</span></td>'
-      + '<td>'+esc(r[4])+'</td><td>'+esc(r[5])+'</td></tr>';
+      + '<td>'+esc(r[4])+'</td><td>'+esc(r[5])+'</td><td>'+esc(r[6])+'</td></tr>';
   });
   tb.innerHTML = html;
   document.getElementById("count").textContent = n + " de " + ROWS.length + " liquidados";
@@ -137,9 +536,13 @@ document.getElementById("rows").addEventListener("change", function(e){
 document.getElementById("reset").addEventListener("click", function(){ state = {}; save(state); render(); });
 (function(){
   var h = "";
-  LINKS.forEach(function(l){
-    h += '<tr><td><strong>'+esc(l[0])+'</strong></td><td><span class="tag '+l[1]+'">'+esc(l[1])+'</span></td>'
-      + '<td>'+esc(l[2])+'<br><a href="'+esc(l[3])+'" target="_blank" rel="noopener">'+esc(l[3])+'</a></td></tr>';
+  LINKS.forEach(function(g){
+    g[2].forEach(function(it, k){
+      h += "<tr>";
+      if (k === 0) h += '<td rowspan="'+g[2].length+'"><strong>'+esc(g[0])+'</strong></td><td rowspan="'+g[2].length+'">'+esc(g[1])+'</td>';
+      h += '<td><span class="tag '+esc(it[0])+'">'+esc(it[0])+'</span></td>'
+        + '<td><a href="'+esc(it[2])+'" target="_blank" rel="noopener">'+esc(it[1])+'</a></td></tr>';
+    });
   });
   document.getElementById("links").innerHTML = h;
 })();
