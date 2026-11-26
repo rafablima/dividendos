@@ -71,6 +71,7 @@
     <ul class="notes">
       <li>Somente contratos perpétuos USDT de ações. Linhas liquidadas antes de 26/11 saíram da tabela (TMUS e STRC na Gate, liquidados em 25/11 às 05:00). Não há eventos anunciados para 28 e 29/11 (sábado e domingo, sem pregão nos EUA).</li>
       <li>Bitget: horários confirmados nos anúncios oficiais (liquidação às 09:00 de UTC+8 = 22:00 de Brasília do dia anterior; CSX e NOC às 06:00 de UTC+8 de 28/11 = 19:00 de Brasília de 27/11, pregão reduzido pós-Ação de Graças). Rendimento % não vem nos anúncios da Bitget: calculado como dividendo ÷ preço de marca do contrato (referência: site Radar de Dividendos, 25/11). Não achei anúncio da Bitget para NEE nem STRC, e ações coreanas (SKHYNIX, HYUNDAI) não têm dividendo por regra. Anúncios lidos: CSX (US$ 0,14) e NOC (US$ 2,47).</li>
+      <li>BingX: quando existe aviso de ajuste do contrato, a moeda entra na tabela como "A definir". O aviso de 26/11 (SKHYNIX, HYUNDAI e NEE) diz que os contratos de ações não participam do dividendo e não traz valor nem horário de pagamento; só reduce-only às 21:30 e retomada por volta das 22:01. Fica incerto até um teste real mostrar crédito ou débito.</li>
       <li>XT: SKHYNIX e SKHY liquidam em 26/11 às 21:00 (00:00 UTC de 27/11), com reduce-only desde 25/11 às 21:00. Linhas mantidas do anúncio de 25/11; não consegui reconfirmar a XT hoje (a página de busca bloqueou a leitura automática), então novos anúncios da XT podem estar faltando. Valor em KRW convertido em USDT pelo câmbio de 1 hora antes.</li>
       <li>BingX: sem aviso de dividendo para o período, então sem linha (sem aviso = sem pagamento; na prática de 25/11 a BingX não pagou TMUS). Aster: sem anúncio por contrato, então sem linha.</li>
       <li>Gate: horários confirmados nos anúncios oficiais (liquidação às 08:00 UTC = 05:00 de Brasília na própria data ex; SKHYNIX às 00:00 UTC de 27/11 = 21:00 de Brasília de 26/11). Sem anúncio da Gate para 28 e 29/11 até agora.</li>
@@ -108,43 +109,237 @@
 
 <script>
 var ROWS = [
-["27/11/2026","26/11 às 22:00 (confirmado)","NEE","MEXC","≈ US$ 0,6232","≈ 0,74%","Pendente"],
-["27/11/2026","27/11 às 05:00 (confirmado)","NEE","Gate","US$ 0,6232","≈ 0,74%","Pendente"],
-["27/11/2026","26/11 às 22:00 (confirmado)","SKHYNIX","MEXC","≈ US$ 15,0113","≈ 1,71%","Pendente"],
-["27/11/2026","26/11 às 21:00 (confirmado)","SKHYNIX","Gate","US$ 14,87 (KRW 20.000)","≈ 1,71%","Pendente (inclui SKHYNIXG à vista)"],
-["27/11/2026","26/11 às 21:00 (confirmado)","SKHYNIX","XT","US$ 14,87 (KRW 20.000)","≈ 1,71%","Pendente (reduce-only desde 25/11 às 21:00)"],
-["27/11/2026","26/11 às 21:00 (confirmado)","SKHY (ADR)","XT","US$ 1,487 (KRW 2.000)","—","Pendente (reduce-only desde 25/11 às 21:00)"],
-["27/11/2026","26/11 às 22:00 (confirmado)","HYUNDAI","MEXC","≈ US$ 1,8764","≈ 0,94%","Pendente"],
-["27/11/2026","27/11 às 05:00 (confirmado)","STRC","Gate","US$ 0,10","—","Pendente"],
-["30/11/2026","27/11 às 19:00 (confirmado)","CSX","Bitget","US$ 0,14","≈ 0,27% (calculado)","Pendente (pregão reduzido dos EUA)"],
-["30/11/2026","27/11 às 19:00 (confirmado)","NOC","Bitget","US$ 2,47","≈ 0,44% (calculado)","Pendente (pregão reduzido dos EUA)"]
+  [
+    "27/11/2026",
+    "26/11 às 22:00 (confirmado)",
+    "NEE",
+    "MEXC",
+    "≈ US$ 0,6232",
+    "≈ 0,74%",
+    "Pendente"
+  ],
+  [
+    "27/11/2026",
+    "27/11 às 05:00 (confirmado)",
+    "NEE",
+    "Gate",
+    "US$ 0,6232",
+    "≈ 0,74%",
+    "Pendente"
+  ],
+  [
+    "27/11/2026",
+    "Não confirmado (reduce-only 26/11 às 21:30; retomada ~22:01)",
+    "NEE",
+    "BingX",
+    "Não informado",
+    "—",
+    "A definir (aviso diz que não participa)"
+  ],
+  [
+    "27/11/2026",
+    "26/11 às 22:00 (confirmado)",
+    "SKHYNIX",
+    "MEXC",
+    "≈ US$ 15,0113",
+    "≈ 1,71%",
+    "Pendente"
+  ],
+  [
+    "27/11/2026",
+    "26/11 às 21:00 (confirmado)",
+    "SKHYNIX",
+    "Gate",
+    "US$ 14,87 (KRW 20.000)",
+    "≈ 1,71%",
+    "Pendente (inclui SKHYNIXG à vista)"
+  ],
+  [
+    "27/11/2026",
+    "26/11 às 21:00 (confirmado)",
+    "SKHYNIX",
+    "XT",
+    "US$ 14,87 (KRW 20.000)",
+    "≈ 1,71%",
+    "Pendente (reduce-only desde 25/11 às 21:00)"
+  ],
+  [
+    "27/11/2026",
+    "Não confirmado (reduce-only 26/11 às 21:30; retomada ~22:01)",
+    "SKHYNIX",
+    "BingX",
+    "Não informado",
+    "—",
+    "A definir (aviso diz que não participa)"
+  ],
+  [
+    "27/11/2026",
+    "26/11 às 21:00 (confirmado)",
+    "SKHY (ADR)",
+    "XT",
+    "US$ 1,487 (KRW 2.000)",
+    "—",
+    "Pendente (reduce-only desde 25/11 às 21:00)"
+  ],
+  [
+    "27/11/2026",
+    "26/11 às 22:00 (confirmado)",
+    "HYUNDAI",
+    "MEXC",
+    "≈ US$ 1,8764",
+    "≈ 0,94%",
+    "Pendente"
+  ],
+  [
+    "27/11/2026",
+    "Não confirmado (reduce-only 26/11 às 21:30; retomada ~22:01)",
+    "HYUNDAI",
+    "BingX",
+    "Não informado",
+    "—",
+    "A definir (aviso diz que não participa)"
+  ],
+  [
+    "27/11/2026",
+    "27/11 às 05:00 (confirmado)",
+    "STRC",
+    "Gate",
+    "US$ 0,10",
+    "—",
+    "Pendente"
+  ],
+  [
+    "30/11/2026",
+    "27/11 às 19:00 (confirmado)",
+    "CSX",
+    "Bitget",
+    "US$ 0,14",
+    "≈ 0,27% (calculado)",
+    "Pendente (pregão reduzido dos EUA)"
+  ],
+  [
+    "30/11/2026",
+    "27/11 às 19:00 (confirmado)",
+    "NOC",
+    "Bitget",
+    "US$ 2,47",
+    "≈ 0,44% (calculado)",
+    "Pendente (pregão reduzido dos EUA)"
+  ]
 ];
 var LINKS = [
-["STRC","27/11",[
-["Gate","Anúncio de 27/11 (US$ 0,10): STRC e NEE","https://www.gate.com/announcements/article/102921"],
-["Calendário","Calendário de dividendos da STRC","https://strcincome.com/dividend"]
-]],
-["NEE","27/11",[
-["MEXC","Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)","https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"],
-["Gate","Anúncio: STRC e NEE","https://www.gate.com/announcements/article/102921"]
-]],
-["SKHYNIX","27/11",[
-["MEXC","Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)","https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"],
-["Gate","Anúncio: SKHYNIX Dividend Settlement (24/11)","https://www.gate.com/announcements/article/102966"],
-["XT","Anúncio: reduce-only e dividendo de SKHYNIXUSDT e SKHYUSDT (25/11)","https://xtsupport.zendesk.com/hc/en-us/articles/64708008101529-XT-Announcement-on-Reduce-Only-Mode-and-Dividend-Settlement-for-SKHYNIXUSDT-and-SKHYUSDT-Perpetual-Futures"]
-]],
-["SKHY (ADR)","27/11",[
-["XT","Anúncio: SKHYNIXUSDT e SKHYUSDT (25/11)","https://xtsupport.zendesk.com/hc/en-us/articles/64708008101529-XT-Announcement-on-Reduce-Only-Mode-and-Dividend-Settlement-for-SKHYNIXUSDT-and-SKHYUSDT-Perpetual-Futures"]
-]],
-["CSX","30/11",[
-["Bitget","Anúncio: CSXUSDT e NOCUSDT (24/11)","https://www.bitget.com/support/articles/12560603901592"]
-]],
-["NOC","30/11",[
-["Bitget","Anúncio: CSXUSDT e NOCUSDT (24/11)","https://www.bitget.com/support/articles/12560603901592"]
-]],
-["HYUNDAI","27/11",[
-["MEXC","Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)","https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"]
-]]
+  [
+    "STRC",
+    "27/11",
+    [
+      [
+        "Gate",
+        "Anúncio de 27/11 (US$ 0,10): STRC e NEE",
+        "https://www.gate.com/announcements/article/102921"
+      ],
+      [
+        "Calendário",
+        "Calendário de dividendos da STRC",
+        "https://strcincome.com/dividend"
+      ]
+    ]
+  ],
+  [
+    "NEE",
+    "27/11",
+    [
+      [
+        "MEXC",
+        "Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)",
+        "https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"
+      ],
+      [
+        "Gate",
+        "Anúncio: STRC e NEE",
+        "https://www.gate.com/announcements/article/102921"
+      ],
+      [
+        "BingX",
+        "Aviso de 26/11: System Adjustment, SKHYNIX, HYUNDAI e NEE (diz que não participa do dividendo)",
+        "https://bingx.com/en/support/articles/18536270575759"
+      ]
+    ]
+  ],
+  [
+    "SKHYNIX",
+    "27/11",
+    [
+      [
+        "MEXC",
+        "Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)",
+        "https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"
+      ],
+      [
+        "Gate",
+        "Anúncio: SKHYNIX Dividend Settlement (24/11)",
+        "https://www.gate.com/announcements/article/102966"
+      ],
+      [
+        "XT",
+        "Anúncio: reduce-only e dividendo de SKHYNIXUSDT e SKHYUSDT (25/11)",
+        "https://xtsupport.zendesk.com/hc/en-us/articles/64708008101529-XT-Announcement-on-Reduce-Only-Mode-and-Dividend-Settlement-for-SKHYNIXUSDT-and-SKHYUSDT-Perpetual-Futures"
+      ],
+      [
+        "BingX",
+        "Aviso de 26/11: System Adjustment, SKHYNIX, HYUNDAI e NEE (diz que não participa do dividendo)",
+        "https://bingx.com/en/support/articles/18536270575759"
+      ]
+    ]
+  ],
+  [
+    "SKHY (ADR)",
+    "27/11",
+    [
+      [
+        "XT",
+        "Anúncio: SKHYNIXUSDT e SKHYUSDT (25/11)",
+        "https://xtsupport.zendesk.com/hc/en-us/articles/64708008101529-XT-Announcement-on-Reduce-Only-Mode-and-Dividend-Settlement-for-SKHYNIXUSDT-and-SKHYUSDT-Perpetual-Futures"
+      ]
+    ]
+  ],
+  [
+    "CSX",
+    "30/11",
+    [
+      [
+        "Bitget",
+        "Anúncio: CSXUSDT e NOCUSDT (24/11)",
+        "https://www.bitget.com/support/articles/12560603901592"
+      ]
+    ]
+  ],
+  [
+    "NOC",
+    "30/11",
+    [
+      [
+        "Bitget",
+        "Anúncio: CSXUSDT e NOCUSDT (24/11)",
+        "https://www.bitget.com/support/articles/12560603901592"
+      ]
+    ]
+  ],
+  [
+    "HYUNDAI",
+    "27/11",
+    [
+      [
+        "MEXC",
+        "Anúncio: SKHYNIX, HYUNDAI e NEE (20/11)",
+        "https://www.mexc.com/pt-BR/announcements/article/mexc-cash-dividend-settlement-for-skhynix-hyundai-and-nee-stock-futures-17827791539876"
+      ],
+      [
+        "BingX",
+        "Aviso de 26/11: System Adjustment, SKHYNIX, HYUNDAI e NEE (diz que não participa do dividendo)",
+        "https://bingx.com/en/support/articles/18536270575759"
+      ]
+    ]
+  ]
 ];
 var KEY = "div-checks-v3";
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)||"{}"); } catch(e){ return {}; } }
